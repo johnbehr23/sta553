@@ -1,0 +1,213 @@
+---
+title: "STA513 HW2"
+author: "John Behr"
+date: " "
+output:
+  html_document: 
+    toc: yes
+    toc_depth: 4
+    fig_width: 6
+    fig_caption: yes
+    number_sections: yes
+    theme: readable
+  pdf_document: 
+    toc: yes
+    toc_depth: 4
+    fig_caption: yes
+    number_sections: yes
+    fig_width: 5
+    fig_height: 4
+  word_document: 
+    toc: yes
+    toc_depth: 4
+    fig_caption: yes
+    keep_md: yes
+---
+<style type="text/css">
+
+div#TOC li {
+    list-style:none;
+    background-image:none;
+    background-repeat:none;
+    background-position:0;
+}
+h1.title {
+  font-size: 20px;
+  color: DarkRed;
+  text-align: center;
+}
+h4.author { /* Header 4 - and the author and data headers use this too  */
+    font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkRed;
+  text-align: center;
+}
+h4.date { /* Header 4 - and the author and data headers use this too  */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+  text-align: center;
+}
+h1 { /* Header 3 - and the author and data headers use this too  */
+    font-size: 22px;
+    font-family: "Times New Roman", Times, serif;
+    color: darkred;
+    text-align: center;
+}
+h2 { /* Header 3 - and the author and data headers use this too  */
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    color: navy;
+    text-align: left;
+}
+
+h3 { /* Header 3 - and the author and data headers use this too  */
+    font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
+    color: navy;
+    text-align: left;
+}
+
+h4 { /* Header 4 - and the author and data headers use this too  */
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    color: darkred;
+    text-align: left;
+}
+</style>
+
+```{r setup1, include=FALSE}
+# code chunk specifies whether the R code, warnings, and output 
+# will be included in the output files.
+if (!require("tidyverse")) {
+   install.packages("tidyverse")
+   library(tidyverse)
+}
+if (!require("knitr")) {
+   install.packages("knitr")
+   library(knitr)
+}
+# knitr::opts_knit$set(root.dir = "C:/Users/75CPENG/OneDrive - West Chester University of PA/Documents")
+# knitr::opts_knit$set(root.dir = "C:\\STA490\\w05")
+
+knitr::opts_chunk$set(echo = TRUE,       
+                      warning = FALSE,   
+                      result = TRUE,   
+                      message = FALSE)
+```
+
+
+
+## Iris Dataset Plot Manipulation
+
+```{r setup2, include=TRUE}
+library(ggplot2)
+ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Sepal.Width)) +
+geom_point(pch = 5)+    
+labs(x = "Sepal Length",y = "Sepal Width",title = "Sepal Length VS. Width" )+
+theme(plot.title = element_text(face = "bold", size = 10,
+                                             family = "sans", 
+                                             color = "darkred",
+                                             hjust = 0.5), 
+axis.title.x = element_text(color = "Gold",
+face = "italic",
+family = "serif",hjust = 0.5),
+axis.title.y = element_text(color = "Black",face = "bold",vjust = 0.5),
+axis.ticks = element_line(color = "Black", 
+                                             size = 0.5),
+axis.line = element_line(color = "Black", size = 1, linetype = "solid"),
+                   
+axis.text.x = element_text(face="plain", color="Black", size=11, angle=360),
+axis.text.y = element_text(face="plain", color="Black", size=11, angle=45),
+legend.background = element_rect(fill = "white", size = 0.1, color = "darkgreen"),
+legend.justification = c(0.9, 0.8),legend.position = "bottom",
+panel.grid.major = element_line(color = "Gold",size = 0.1),
+panel.grid.minor = element_blank())
+```
+
+
+## Penguin Dataset Manipulation
+
+```{r setup3, include=TRUE}
+library(readr)  # for read_csv
+library(knitr)  # for kable
+myfile <- "https://raw.github.com/johnbehr23/sta553/master/w02-penguins.csv"
+Penguins <- read_csv(myfile)
+
+
+Penguins.1 <- Penguins[complete.cases(Penguins), ]
+print(Penguins.1)
+
+
+new.Penguins.id02 = which(Penguins.1$island == "Biscoe" | Penguins.1$island == "Torgersen")
+Penguins.1 = Penguins.1[new.Penguins.id02,]
+Penguins.1
+print(Penguins.1)
+
+
+Penguins.1 <- subset(Penguins.1, body_mass_g > 3500 & body_mass_g < 5000,
+select=c(species,island,bill_length_mm,bill_depth_mm,flipper_length_mm,body_mass_g,sex,year))
+
+
+Penguins.1$BMI <- (Penguins.1$body_mass_g / 4000)
+
+
+Penguins.1 = select(Penguins.1,species,island,bill_length_mm,bill_depth_mm,flipper_length_mm,BMI)
+str(Penguins.1)
+```
+
+## Penguin Plot
+
+
+```{r setup4, include=TRUE}
+library(ggplot2)
+ggplot(data = Penguins.1, mapping = aes(x = bill_length_mm, y = bill_depth_mm)) +
+    geom_point(pch = 5)+    
+        labs(    x = "Bill Length",
+                 y = "Bill Depth",
+                 title = "Bill Length VS. Bill Depth" )+
+  
+              theme(plot.title = element_text(face = "bold", 
+                                             size = 10,
+                                             family = "sans", 
+                                             color = "darkred",
+                                             hjust = 0.5), # left(0),right(1)
+                   # Labels of axes 
+                   axis.title.x = element_text(color = "Gold",
+                                               face = "italic",
+                                               family = "serif",
+                                               hjust = 0.5),
+                   axis.title.y = element_text(color = "Purple",
+                                               face = "bold",
+                                               vjust = 0.5),
+                   axis.ticks = element_line(color = "Black", 
+                                             size = 0.5),
+                   axis.line = element_line(color = "Black", 
+                                            size = 1, 
+                                            linetype = "solid"),
+                   # Axis tick marks
+                   axis.text.x = element_text(face="plain", 
+                                              color="purple", 
+                                              size=11, 
+                                              angle=360),
+                   axis.text.y = element_text(face="plain", 
+                                              color="Purple", 
+                                              size=11, 
+                                              angle=45),
+                   # Features of legend
+                   legend.background = element_rect(fill = "white", 
+                                                    size = 0.1, 
+                                                    color = "darkgreen"),
+                   legend.justification = c(0.9, 0.8),
+                   legend.position = "bottom",
+                   ## Panel grid
+                   panel.grid.major = element_line(color = "Gold", 
+                                                   size = 0.1),
+                   panel.grid.minor = element_blank())
+  
+```
+
+## Paragraph About the Relationship 
+
+As you can see from the graph in the section above there is a clear relationship between Bill length and Bill Depth. It is clear to see that when there is a higher Bill length there is a lower Bill depth, and vise versa, when there is a higher Bill Depth there is a lower Bill length. This shows that there is an inverse relationship between the two variables.
+
